@@ -5,9 +5,10 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AliOssModule } from './ali-oss/ali-oss.module';
+import { PostModule } from './post/post.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, AliOssModule],
+  imports: [PrismaModule, AuthModule, UserModule, AliOssModule, PostModule],
   controllers: [AppController],
   providers: [AppService],
 })
