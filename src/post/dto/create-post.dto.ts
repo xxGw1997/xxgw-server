@@ -1,7 +1,14 @@
-import { Category } from '@prisma/client';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatePostDto {
+  @IsString()
+  @IsNotEmpty()
   title: string;
-  desc: string;
+
+  @IsString()
   content: string;
+
+  @IsArray()
+  @IsNotEmpty()
+  categories: number[];
 }
