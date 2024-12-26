@@ -6,6 +6,9 @@ export class CreatePostDto {
   title: string;
 
   @IsString()
+  desc: string;
+
+  @IsString()
   content: string;
 
   @IsArray()

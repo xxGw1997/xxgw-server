@@ -1,11 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { FormatResponseInterceptor } from './common/interceptors/format-response.interceptor';
+import { FormatErrorInterceptor } from './common/interceptors/format-error.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+  // 全局返回格式化拦截器
+  app.useGlobalInterceptors(new FormatResponseInterceptor());
+  // 全局错误格式化拦截器
+  app.useGlobalInterceptors(new FormatErrorInterceptor());
+
   app.enableCors({
     origin: process.env.ADMIN_URL, // 前端的运行地址
     credentials: true, // 如果需要发送 cookie 或凭据，设置为 true

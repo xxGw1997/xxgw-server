@@ -13,9 +13,12 @@ export class PostService {
       data: {
         title: createPostDto.title,
         content: createPostDto.content,
+        desc: createPostDto.desc,
         author: { connect: { id: authorId } },
         categories: {
-          connect: createPostDto.categories.map((id) => ({ id })),
+          create: createPostDto.categories.map((id) => ({
+            category: { connect: { id } },
+          })),
         },
       },
     });
