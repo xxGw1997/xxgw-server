@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 
 // 统一返回的格式
 interface Response<T> {
-  code: number;
+  success: boolean;
   message: string;
   data: T;
 }
@@ -24,7 +24,7 @@ export class FormatResponseInterceptor<T>
   ): Observable<Response<T>> {
     return next.handle().pipe(
       map((data) => ({
-        code: 200, // 成功时的返回码
+        success: true,
         message: '请求成功',
         data,
       })),

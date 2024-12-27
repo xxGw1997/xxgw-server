@@ -7,7 +7,7 @@ import {
 import { catchError, Observable, of } from 'rxjs';
 
 interface ErrorResponse {
-  code: number;
+  success: boolean;
   message: string;
   error: string;
 }
@@ -24,7 +24,7 @@ export class FormatErrorInterceptor<T>
       catchError((err) => {
         // 返回统一的错误格式
         return of({
-          code: 500,
+          success: false,
           message: '服务器错误',
           error: err.message || '未知错误',
         });

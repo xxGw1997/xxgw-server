@@ -11,7 +11,7 @@ async function bootstrap() {
   // 全局返回格式化拦截器
   app.useGlobalInterceptors(new FormatResponseInterceptor());
   // 全局错误格式化拦截器
-  app.useGlobalInterceptors(new FormatErrorInterceptor());
+  // app.useGlobalInterceptors(new FormatErrorInterceptor());
 
   app.enableCors({
     origin: process.env.ADMIN_URL, // 前端的运行地址
