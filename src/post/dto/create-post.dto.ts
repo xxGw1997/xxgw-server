@@ -1,4 +1,12 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreatePostDto {
   @IsString()
@@ -14,4 +22,12 @@ export class CreatePostDto {
   @IsArray()
   @IsNotEmpty()
   categories: number[];
+
+  @IsBoolean()
+  isPublishNow: boolean;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  date?: Date;
 }

@@ -9,11 +9,15 @@ export class PostService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createPostDto: CreatePostDto, authorId: number) {
+    if (createPostDto.isPublishNow) {
+      createPostDto.date = new Date();
+    }
     return this.prisma.post.create({
       data: {
         title: createPostDto.title,
         content: createPostDto.content,
         desc: createPostDto.desc,
+        publishDate: createPostDto.date,
         author: { connect: { id: authorId } },
         categories: {
           create: createPostDto.categories.map((id) => ({
@@ -28,8 +32,22 @@ export class PostService {
     return `This action returns all post`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
+  async findOne(id: number) {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        categories: true,
+      },
+    });
+    if (!post) throw new Error(`Post with id ${id} not found~`);
+
+    const categories = post.categories.map((c) => c.categoryId);
+    return {
+      ...post,
+      categories,
+    };
   }
 
   update(id: number, updatePostDto: Prisma.PostUpdateInput) {
