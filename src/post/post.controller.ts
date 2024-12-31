@@ -9,8 +9,8 @@ import {
   Req,
 } from '@nestjs/common';
 import { PostService } from './post.service';
-import { Prisma } from '@prisma/client';
 import { CreatePostDto } from './dto/create-post.dto';
+import { UpdatePostDto } from './dto/update-post.dto';
 
 @Controller('post')
 export class PostController {
@@ -32,10 +32,7 @@ export class PostController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updatePostDto: Prisma.PostUpdateInput,
-  ) {
+  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postService.update(+id, updatePostDto);
   }
 

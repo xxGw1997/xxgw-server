@@ -14,9 +14,11 @@ export class CreatePostDto {
   title: string;
 
   @IsString()
+  @IsNotEmpty()
   desc: string;
 
   @IsString()
+  @IsNotEmpty()
   content: string;
 
   @IsArray()
@@ -29,5 +31,5 @@ export class CreatePostDto {
   @IsOptional()
   @IsDate()
   @Type(() => Date)
-  date?: Date;
+  publishDate?: Date;
 }
