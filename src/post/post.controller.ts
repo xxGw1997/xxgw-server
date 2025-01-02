@@ -11,6 +11,7 @@ import {
 import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { GetPostListDto } from './dto/get-post-list.dto';
 
 @Controller('post')
 export class PostController {
@@ -24,6 +25,11 @@ export class PostController {
   @Get()
   findAll() {
     return this.postService.findAll();
+  }
+
+  @Post('list')
+  findList(@Body() getListParams: GetPostListDto) {
+    return this.postService.findList(getListParams);
   }
 
   @Get(':id')

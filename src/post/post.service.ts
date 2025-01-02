@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from '~/prisma/prisma.service';
+import { GetPostListDto } from './dto/get-post-list.dto';
+import { contains } from 'class-validator';
 
 @Injectable()
 export class PostService {
@@ -29,6 +31,66 @@ export class PostService {
 
   findAll() {
     return `This action returns all post`;
+  }
+
+  async findList(getListParams: GetPostListDto) {
+    const whereObj = {};
+    Object.entries(getListParams).forEach(([k, v]) => {
+      if (k === 'page') return;
+      if (v) {
+        whereObj[k] = {
+          contains: v,
+          mode: 'insensitive',
+        };
+      }
+    });
+
+    const page = getListParams.page;
+
+    const [postList, total] = await Promise.all([
+      this.prisma.post.findMany({
+        where: whereObj,
+        skip: page.index * page.size,
+        take: page.size,
+        select: {
+          id: true,
+          title: true,
+          desc: true,
+          publishDate: true,
+          createdAt: true,
+          author: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          categories: {
+            select: {
+              category: {
+                select: {
+                  title: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.post.count({ where: whereObj }),
+    ]);
+
+    postList.forEach((post) => {
+      const categories = post.categories.map((c) => c.category.title);
+      post.categories = categories as any;
+    });
+
+    return {
+      postList,
+      page: {
+        index: page.index,
+        size: page.size,
+        total,
+      },
+    };
   }
 
   async findOne(id: number) {
@@ -78,19 +140,4 @@ export class PostService {
   remove(id: number) {
     return `This action removes a #${id} post`;
   }
-
-  // cleanObject(obj: Record<string, any>): Record<string, any> {
-  //   return Object.entries(obj)
-  //     .filter(
-  //       ([key, value]) =>
-  //         value !== null &&
-  //         value !== undefined &&
-  //         value !== '' &&
-  //         value.length > 0,
-  //     )
-  //     .reduce((acc, [key, value]) => {
-  //       acc[key] = value;
-  //       return acc;
-  //     }, {});
-  // }
 }
