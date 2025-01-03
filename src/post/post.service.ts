@@ -3,7 +3,6 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from '~/prisma/prisma.service';
 import { GetPostListDto } from './dto/get-post-list.dto';
-import { contains } from 'class-validator';
 
 @Injectable()
 export class PostService {
