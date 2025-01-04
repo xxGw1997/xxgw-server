@@ -36,11 +36,18 @@ export class PostService {
     const whereObj = {};
     Object.entries(getListParams).forEach(([k, v]) => {
       if (k === 'page') return;
-      if (v) {
-        whereObj[k] = {
-          contains: v,
-          mode: 'insensitive',
-        };
+      if (v && v.length > 0) {
+        if (k === 'author') {
+          whereObj[k] = {
+            name: {
+              contains: v,
+            },
+          };
+        } else {
+          whereObj[k] = {
+            contains: v,
+          };
+        }
       }
     });
 
@@ -74,7 +81,9 @@ export class PostService {
           },
         },
       }),
-      this.prisma.post.count({ where: whereObj }),
+      this.prisma.post.count({
+        where: whereObj,
+      }),
     ]);
 
     postList.forEach((post) => {
