@@ -43,6 +43,14 @@ export class PostService {
               contains: v,
             },
           };
+        } else if (k === 'categories') {
+          whereObj[k] = {
+            some: {
+              categoryId: {
+                in: v,
+              },
+            },
+          };
         } else {
           whereObj[k] = {
             contains: v,
