@@ -126,7 +126,7 @@ export class PostService {
         categories: true,
       },
     });
-    if (!post) throw new Error(`Post with id ${id} not found~`);
+    if (!post) throw new NotFoundException(`Post with id ${id} not found~`);
 
     const categories = post.categories.map((c) => c.categoryId);
     return {
