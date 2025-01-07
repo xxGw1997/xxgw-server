@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PrismaService } from '~/prisma/prisma.service';
 import { GetPostListDto } from './dto/get-post-list.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class PostService {
@@ -26,10 +31,6 @@ export class PostService {
         },
       },
     });
-  }
-
-  findAll() {
-    return `This action returns all post`;
   }
 
   async findList(getListParams: GetPostListDto) {
@@ -58,6 +59,10 @@ export class PostService {
         }
       }
     });
+
+    whereObj['status'] = {
+      not: 'DELETED',
+    };
 
     const page = getListParams.page;
 
@@ -113,6 +118,9 @@ export class PostService {
     const post = await this.prisma.post.findUnique({
       where: {
         id,
+        status: {
+          not: 'DELETED',
+        },
       },
       include: {
         categories: true,
@@ -128,7 +136,9 @@ export class PostService {
   }
 
   async update(id: number, updatePostDto: UpdatePostDto) {
-    const post = await this.prisma.post.findUnique({ where: { id } });
+    const post = await this.prisma.post.findUnique({
+      where: { id, status: { not: 'DELETED' } },
+    });
     if (!post) {
       throw new NotFoundException(`Post with id ${id} not found~`);
     }
@@ -153,7 +163,36 @@ export class PostService {
     return res;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async remove(id: number, curUser: { id: number; role: Role }) {
+    const isAdmin = curUser.role === 'ADMIN';
+    if (!isAdmin) {
+      const postAuthorId = await this.prisma.post.findUnique({
+        where: {
+          id: id,
+        },
+        select: {
+          author: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+      if (!postAuthorId) throw new NotFoundException('没有找到文章~');
+
+      if (postAuthorId.author.id !== curUser.id)
+        throw new ForbiddenException('你没有权限删除此文章~');
+    }
+
+    const result = await this.prisma.post.update({
+      data: {
+        status: 'DELETED',
+      },
+      where: {
+        id,
+      },
+    });
+    if (result) return '删除成功~';
+    return '操作失败~';
   }
 }

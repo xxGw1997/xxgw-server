@@ -22,11 +22,6 @@ export class PostController {
     return this.postService.create(createPostDto, req.user.id);
   }
 
-  @Get()
-  findAll() {
-    return this.postService.findAll();
-  }
-
   @Post('list')
   findList(@Body() getListParams: GetPostListDto) {
     return this.postService.findList(getListParams);
@@ -43,7 +38,7 @@ export class PostController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    return this.postService.remove(+id, req.user);
   }
 }
