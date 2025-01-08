@@ -1,16 +1,15 @@
 import {
   ConflictException,
-  HttpException,
-  HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { PrismaService } from '~/prisma/prisma.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
 
 @Injectable()
 export class CategoryService {
   constructor(private readonly prisma: PrismaService) {}
-  async create(createCategoryDto: Prisma.CategoryCreateInput) {
+  async create(createCategoryDto: CreateCategoryDto) {
     const category = await this.prisma.category.findFirst({
       where: {
         title: createCategoryDto.title,
@@ -40,7 +39,25 @@ export class CategoryService {
     return `This action updates a #${id} category`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async findCount(id: number) {
+    return await this.prisma.postCategory.count({ where: { categoryId: id } });
+  }
+
+  async remove(id: number) {
+    const postsCountInUse = await this.findCount(id);
+    if (postsCountInUse <= 0) {
+      try {
+        await this.prisma.category.delete({
+          where: {
+            id,
+          },
+        });
+      } catch (error) {
+        throw new NotFoundException(error);
+      }
+    }
+    return {
+      countInUse: postsCountInUse,
+    };
   }
 }
