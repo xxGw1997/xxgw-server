@@ -20,6 +20,10 @@ export class GetPostListDto {
   })
   categories: number[];
 
+  @IsOptional()
+  @IsString()
+  category: string;
+
   @ValidateNested()
   @Type(() => PaginationDto)
   page: PaginationDto = new PaginationDto();

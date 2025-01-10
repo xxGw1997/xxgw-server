@@ -12,6 +12,7 @@ import { PostService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { GetPostListDto } from './dto/get-post-list.dto';
+import { Public } from '~/auth/decorators/public.decorator';
 
 @Controller('post')
 export class PostController {
@@ -22,11 +23,13 @@ export class PostController {
     return this.postService.create(createPostDto, req.user.id);
   }
 
+  @Public()
   @Post('list')
   findList(@Body() getListParams: GetPostListDto) {
     return this.postService.findList(getListParams);
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postService.findOne(+id);

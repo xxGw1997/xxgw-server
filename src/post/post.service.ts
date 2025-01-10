@@ -52,6 +52,16 @@ export class PostService {
               },
             },
           };
+        } else if (k === 'category' && !whereObj[k]) {
+          whereObj['categories'] = {
+            some: {
+              category: {
+                title: {
+                  equals: v,
+                },
+              },
+            },
+          };
         } else {
           whereObj[k] = {
             contains: v,
